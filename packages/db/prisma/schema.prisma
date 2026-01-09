@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String       @id @default(uuid())
+  email      String       @unique
+  password   String
+  name       String
+  role       Role
+  leaderboard LeaderBoard[]
+  Submission  Submission[]
+}
+
+enum Role {
+  User
+  Admin
+}
+
+model Contest {
+  id                          String                         @id @default(uuid())
+  title                       String
+  StartTime                   DateTime
+  ContestToChallangeMappling  ContestToChallangeMappling[]
+  leaderboard                 LeaderBoard[]
+}
+
+model Challange {
+  id                         String                         @id @default(uuid())
+  title                      String
+  notionDocId                String
+  descripton                 String
+  maxPoints                  Int
+  ContestToChallangeMappling ContestToChallangeMappling[]
+}
+
+model ContestToChallangeMappling {
+  id         String       @id @default(uuid())
+  contestId  String
+  challangeId String
+  index      Int
+  submission Submission[]
+  contest    Contest      @relation(fields: [contestId], references: [id])
+  challange  Challange    @relation(fields: [challangeId], references: [id])
+
+  @@unique([contestId, challangeId])
+}
+
+model Submission {
+  id                              String                             @id @default(uuid())
+  ContestToChallangeMapplingId    String
+  userId                          String
+  user                            User                               @relation(fields: [userId], references: [id])
+  submission                      String
+  ContestToChallangeMappling      ContestToChallangeMappling         @relation(fields: [ContestToChallangeMapplingId], references: [id])
+  points                          Int
+  createdAt                       DateTime                           @default(now())
+}
+
+model LeaderBoard {
+  id       String   @id @default(uuid())
+  contestId String
+  userId    String
+  rank      Int
+  contest   Contest  @relation(fields: [contestId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([contestId, rank])
+}
