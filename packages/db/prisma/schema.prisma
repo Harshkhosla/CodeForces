@@ -16,11 +16,11 @@ datasource db {
 model User {
   id         String       @id @default(uuid())
   email      String       @unique
-  password   String
-  name       String
+  name       String?
   role       Role
   leaderboard LeaderBoard[]
   Submission  Submission[]
+  ContestSubmission  ContestSubmission[]
 }
 
 enum Role {
@@ -43,6 +43,7 @@ model Challange {
   descripton                 String
   maxPoints                  Int
   ContestToChallangeMappling ContestToChallangeMappling[]
+  submission Submission[]
 }
 
 model ContestToChallangeMappling {
@@ -50,7 +51,7 @@ model ContestToChallangeMappling {
   contestId  String
   challangeId String
   index      Int
-  submission Submission[]
+  ContestSubmission ContestSubmission[]
   contest    Contest      @relation(fields: [contestId], references: [id])
   challange  Challange    @relation(fields: [challangeId], references: [id])
 
@@ -58,6 +59,17 @@ model ContestToChallangeMappling {
 }
 
 model Submission {
+  id                              String                             @id @default(uuid())
+  challangeId    String
+  userId                          String
+  user                            User                               @relation(fields: [userId], references: [id])
+  submission                      String
+  challange      Challange         @relation(fields: [challangeId], references: [id])
+  points                          Int
+  createdAt                       DateTime                           @default(now())
+}
+
+model ContestSubmission {
   id                              String                             @id @default(uuid())
   ContestToChallangeMapplingId    String
   userId                          String
