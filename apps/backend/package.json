@@ -10,7 +10,9 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "express": "^5.2.1",
-    "db":"*"
+    "@types/cors": "^2.8.19",
+    "cors": "^2.8.5",
+    "db": "*",
+    "express": "^5.2.1"
   }
 }
